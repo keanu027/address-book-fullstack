@@ -7,6 +7,15 @@ import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
+import Snackbar from '@material-ui/core/Snackbar';
+import PropTypes from 'prop-types';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import axios from 'axios';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+import InfoIcon from '@material-ui/icons/Info'
+import WarningIcon from '@material-ui/icons/Warning';
+import { resolve } from 'path';
 
 const styles={
     title:{
@@ -48,45 +57,126 @@ const styles={
     }
   }
 
+const variantIcon = {
+    success: CheckCircleIcon,
+    warning: WarningIcon,
+    error: ErrorIcon,
+    info: InfoIcon,
+  };
+
+MySnackbarContentWrapper.propTypes = {
+    className: PropTypes.string,
+    message: PropTypes.string,
+    onClose: PropTypes.func,
+    variant: PropTypes.oneOf(['error', 'info', 'success', 'warning']).isRequired,
+};
+
+function MySnackbarContentWrapper(props){
+  const { className, message, onClose, variant, ...other } = props;
+  const Icon = variantIcon[variant];
+  
+  return (
+    <SnackbarContent 
+    aria-describedby="client-snackbar"
+    message={
+      <span id="client-snackbar" style={{display:'flex',alignItems:'center'}}>
+        <Icon   />
+        {message}
+      </span>
+    }
+
+    />
+  )
+}
+
 class Login extends React.Component {
   constructor(props){
     super(props);
     this.state={
       username:'',
       password:'',
+      token: [],
+      errormessage: '',
       errorusername: false,
       errorpassword: false,
-      viewlogin: true,
-      viewcreate: false,
+      errorvalidusername: false,
+      errorvalidpassword: false,
+      openmessage: false,
     }
     this.handleUsername = this.handleUsername.bind(this);
     this.handlePassword = this.handlePassword.bind(this);
     this.handleBtnLogIn = this.handleBtnLogIn.bind(this);
-    this.handleBtnCreate = this.handleBtnCreate.bind(this);
-    this.handleSignup = this.handleSignup.bind(this);
+    this.handleClose = this.handleClose.bind(this);
   }
-  handleSignup(viewloginvalue,viewcreatevalue){
+  componentDidMount(){
+    if(localStorage.getItem('token')){
+      this.props.history.push('/')
+    }
+  }
+  handleClose(){
     this.setState({
-      viewlogin: viewloginvalue,
-      viewcreate: viewcreatevalue,
+      openmessage: false,
     })
   }
-  handleBtnCreate(){
-    this.setState({
-      viewlogin: false,
-      viewcreate: true,
-    })
-  }
+
   handleBtnLogIn(){
-    this.setState({
-      viewlogin: true,
-      viewcreate: false,
-    })
+    if(this.state.username.length === 0 || this.state.password.length === 0){
+      if(this.state.username.length === 0 && this.state.password.length !== 0){
+        this.setState({
+          errorusername: true
+        })
+      } else if(this.state.password.length === 0 && this.state.username.length !== 0){
+        this.setState({
+          errorpassword: true
+        })
+      } else{
+        this.setState({
+          errorusername: true,
+          errorpassword: true
+        })
+      }
+    } else {
+        axios.post('http://localhost:3001/api/login',{
+          username: this.state.username,
+          password: this.state.password
+        }).then(res =>{
+          if(res.data.error === "Invalid username" || res.data.error === "Incorrect password"  ){
+            console.log(res.data.error)
+            if(res.data.error === "Invalid username" && res.data.error !== "Incorrect password"  ){
+              this.setState({
+                errormessage: res.data.error,
+                openmessage: true,
+                errorvalidusername: true,
+                errorvalidpassword: true,
+              })
+
+            } else {
+              this.setState({
+                errormessage: res.data.error,
+                openmessage: true,
+                errorvalidusername: false,
+                errorvalidpassword: true,
+              })
+
+            }
+
+          } else {
+            localStorage.setItem('token',res.data.token)
+            localStorage.setItem('username',res.data.username)
+            //console.log(res.data.username)
+            this.props.history.push('/home')
+
+          }
+
+        })      
+    }
+
   }
   handleUsername = key => event =>{
     if(event.target.value.length === 0){
       this.setState({
         errorusername: true,
+        errorvalidusername: false,
         [key]: event.target.value 
       })
     } else {
@@ -100,6 +190,7 @@ class Login extends React.Component {
     if(event.target.value.length === 0){
       this.setState({
         errorpassword: true,
+        errorvalidpassword: false,
         [key]: event.target.value 
       })
     } else {
@@ -114,13 +205,29 @@ class Login extends React.Component {
         return(
         <React.Fragment>
         <Grid
-      container
-      direction="row"
-      justify="center"
-      alignItems="center"
-      >
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+        >
         <Paper className={classes.containerTitle}
         >
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          open={this.state.openmessage}
+          autoHideDuration={5000}
+          onClose={this.handleClose}
+        >
+          <MySnackbarContentWrapper
+          onClose={this.handleClose}
+          variant="error"
+          message={this.state.errormessage}
+        />
+        </Snackbar>
+
             <Grid container justify="center" alignItems="center"  >
                 <img alt="" className={classes.img} src="https://cdn3.iconfinder.com/data/icons/business-avatar-1/512/10_avatar-512.png"/>
             </Grid>
@@ -134,7 +241,7 @@ class Login extends React.Component {
                 label="Username"
                 margin="normal"
                 fullWidth required
-                error={this.state.errorusername}
+                error={this.state.errorusername||this.state.errorvalidusername}
                 value={this.state.username}
                 onChange={this.handleUsername('username')}
                 onBlur={this.handleUsername('username')}
@@ -143,6 +250,10 @@ class Login extends React.Component {
                 className={classes.textHelper}
                 style={{display: this.state.errorusername ? 'block': 'none'}}
             >Username is required</FormHelperText>
+            <FormHelperText
+                className={classes.textHelper}
+                style={{display: this.state.errorvalidusername ? 'block': 'none'}}
+            >Incorrect Username</FormHelperText>
             </Grid>
 
             <Grid container direction="row" justify="center"  alignItems="center"  >
@@ -152,7 +263,7 @@ class Login extends React.Component {
                 type="password"
                 margin="normal"
                 fullWidth required
-                error={this.state.errorpassword}
+                error={this.state.errorpassword||this.state.errorvalidpassword}
                 value={this.state.password}
                 onChange={this.handlePassword('password')}
                 onBlur={this.handlePassword('password')}
@@ -161,6 +272,10 @@ class Login extends React.Component {
                 className={classes.textHelper}
                 style={{display: this.state.errorpassword ? 'block': 'none'}}
             >Password is required</FormHelperText>
+            <FormHelperText
+                className={classes.textHelper}
+                style={{display: this.state.errorvalidpassword ? 'block': 'none'}}
+            >Incorrect Password</FormHelperText>
             </Grid>
             <Grid container direction="row" justify="center"  alignItems="center"  >
                 <Button variant="contained" fullWidth className={classes.btnSubmit}
@@ -171,7 +286,7 @@ class Login extends React.Component {
             </Grid>
           
             <Grid container direction="row" justify="center"  alignItems="center"  >
-            <Link to={'./api/registration'} >
+            <Link to={'/api/registration'} >
             <Typography variant="body2" className={classes.btnCreateAcc}>Don't have an account? Sign Up</Typography>
             
             </Link>

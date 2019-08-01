@@ -3,6 +3,7 @@ const express = require('express');
 const massive = require('massive');
 const path = require('path');
 const signup = require('../controllers/signup.js');
+const contacts = require('../controllers/addcontacts.js');
 const secret = require('../secret.js');
 const jwt = require('jsonwebtoken');
 const cors = require("cors");
@@ -23,7 +24,13 @@ massive({
  /* app.get('/debug',function(req,res){
     res.status(200).json(req.app.get('db'))
   }) */
+
   app.post('/api/registration',signup.create)
+  app.post('/api/login',signup.login)
+
+  app.post('/',contacts.create)
+  app.post('/home',contacts.create)
+
 
   app.get('/api/protected/data',function(req, res){
     if (!req.headers.authorization) {

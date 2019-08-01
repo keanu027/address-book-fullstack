@@ -8,8 +8,14 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Snackbar from '@material-ui/core/Snackbar';
+import PropTypes from 'prop-types';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 import axios from 'axios';
-import { Redirect } from 'react-router-dom';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+import InfoIcon from '@material-ui/icons/Info'
+import WarningIcon from '@material-ui/icons/Warning';
 const styles={
     title:{
       fontSize: '28px',
@@ -49,6 +55,35 @@ const styles={
       textAlign: 'center'
     }
   }
+  const variantIcon = {
+    success: CheckCircleIcon,
+    warning: WarningIcon,
+    error: ErrorIcon,
+    info: InfoIcon,
+  };
+MySnackbarContentWrapper.propTypes = {
+    className: PropTypes.string,
+    message: PropTypes.string,
+    onClose: PropTypes.func,
+    variant: PropTypes.oneOf(['error', 'info', 'success', 'warning']).isRequired,
+};
+function MySnackbarContentWrapper(props){
+  const { className, message, onClose, variant, ...other } = props;
+  const Icon = variantIcon[variant];
+  
+  return (
+    <SnackbarContent 
+    aria-describedby="client-snackbar"
+    message={
+      <span id="client-snackbar" style={{display:'flex',alignItems:'center'}}>
+        <Icon   />
+        {message}
+      </span>
+    }
+
+    />
+  )
+}
 
 class Signup extends React.Component {
     constructor(props){
@@ -58,30 +93,93 @@ class Signup extends React.Component {
           password: '',
           fname:'',
           lname: '',
+          errormessage: '',
           errorusername: false,
           errorpassword: false,
           required: true,
           errorfname: false,
           errorlname: false,
+          openmessage: false,
+          errorvalidusername: false,
+          errorvalidpassword: false,
       }
       this.handleUsername = this.handleUsername.bind(this);
       this.handlePassword = this.handlePassword.bind(this);
       this.handleCreate = this.handleCreate.bind(this);
       this.handleFname = this.handleFname.bind(this);
       this.handleLname = this.handleLname.bind(this);
+      this.handleClose = this.handleClose.bind(this);
+    }
+    componentDidMount(){
+      if(localStorage.getItem('token')){
+        this.props.history.push('/')
+      }
+    }
+    handleClose(){
+      this.setState({
+        openmessage: false,
+      })
     }
     handleCreate(){
-      //console.log(this.state.username,this.state.password,this.state.fname,this.state.lname)
-      axios.post('http://localhost:3001/api/registration',{
-        username: this.state.username,
-        password: this.state.password,
-        fname: this.state.fname,
-        lname: this.state.lname
-      }).then(res =>{
-        console.log(res)
-        return <Redirect to='/api/login' />
-      })
+      if(this.state.username.length === 0 || this.state.password.length === 0 || this.state.fname.length === 0 || this.state.lname.length === 0){
+          if(this.state.username.length === 0 && this.state.password.length !== 0
+            && this.state.fname.length !== 0 && this.state.lname.length !== 0 ){
+            this.setState({
+              errorusername:true
+            })
+          } else if (this.state.password.length === 0 && this.state.username.length !== 0 
+                    && this.state.fname.length !== 0 && this.state.lname.length !== 0 ){
+            this.setState({
+              errorpassword:true
+            })
+          } else if(this.state.fname.length === 0 && this.state.lname.length !== 0
+            && this.state.password.length !== 0 && this.state.username.length !== 0 ){
+            this.setState({
+              errorfname:true
+            })
+          } else if(this.state.lname.length === 0 && this.state.fname.length !== 0
+            && this.state.password.length !== 0 && this.state.username.length !== 0 ){
+            this.setState({
+              errorlname:true
+            })
+          } else if(this.state.lname.length === 0 && this.state.fname.length === 0
+            && this.state.password.length !== 0 && this.state.username.length !== 0 ){
+            this.setState({
+              errorfname:true,
+              errorlname:true
+            })
+          } else {
+            this.setState({
+              errorfname:true,
+              errorlname:true,
+              errorusername:true,
+              errorpassword:true
+            })
+          }
+      } else{
+              axios.post('http://localhost:3001/api/registration',{
+                username: this.state.username,
+                password: this.state.password,
+                fname: this.state.fname,
+                lname: this.state.lname
+              }).then(res =>{
+                if(res.data.error === "Already have Account"){
+                console.log(res.data.error)
+                  this.setState({
+                    errormessage: res.data.error,
+                    openmessage: true,
+                    errorvalidusername: true,
+                    errorvalidpassword: true,
+                  })
+                } else {
+                  console.log(res)
+                  this.props.history.push("/api/login")
+                }
+                
+              })
+      }
 
+     
     }
     handleLname = key => event =>{
       if(event.target.value.length === 0){
@@ -114,11 +212,13 @@ class Signup extends React.Component {
         if(event.target.value.length === 0){
           this.setState({
             errorusername: true,
+            errorvalidusername: false,
             [key]: event.target.value 
           })
         } else {
           this.setState({
             errorusername: false,
+            errorvalidusername: false,
             [key]: event.target.value 
           })
         }
@@ -127,11 +227,13 @@ class Signup extends React.Component {
         if(event.target.value.length === 0){
           this.setState({
             errorpassword: true,
+            errorvalidpassword: false,
             [key]: event.target.value 
           })
         } else {
           this.setState({
             errorpassword: false,
+            errorvalidpassword: false,
             [key]: event.target.value 
           })
         }
@@ -147,6 +249,22 @@ class Signup extends React.Component {
       alignItems="center"
       >
         <Paper className={classes.containerTitle}>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          open={this.state.openmessage}
+          autoHideDuration={5000}
+          onClose={this.handleClose}
+        >
+          <MySnackbarContentWrapper
+          onClose={this.handleClose}
+          variant="error"
+          message={this.state.errormessage}
+        />
+        </Snackbar>
+
           <Grid container justify="center" alignItems="center"  >
             <Avatar className={classes.img}>
                 <LockOutlinedIcon  />
@@ -209,7 +327,7 @@ class Signup extends React.Component {
                 variant="outlined"
                 fullWidth 
                 required={this.state.required}
-                error={this.state.errorusername}
+                error={this.state.errorusername||this.state.errorvalidusername}
                 value={this.state.username}
                 onChange={this.handleUsername('username')}
                 onBlur={this.handleUsername('username')}
@@ -218,6 +336,10 @@ class Signup extends React.Component {
                 className={classes.textHelper}
                 style={{display: this.state.errorusername ? 'block': 'none'}}
             >Username is required</FormHelperText>
+            <FormHelperText
+                className={classes.textHelper}
+                style={{display: this.state.errorvalidusername ? 'block': 'none'}}
+            >Username is already exist</FormHelperText>
             </Grid>
 
             <Grid container direction="row" justify="center"  alignItems="center"  >
@@ -229,7 +351,7 @@ class Signup extends React.Component {
                 variant="outlined"
                 fullWidth 
                 required={this.state.required}
-                error={this.state.errorpassword}
+                error={this.state.errorpassword||this.state.errorvalidpassword}
                 value={this.state.password}
                 onChange={this.handlePassword('password')}
                 onBlur={this.handlePassword('password')}
@@ -238,6 +360,10 @@ class Signup extends React.Component {
                 className={classes.textHelper}
                 style={{display: this.state.errorpassword ? 'block': 'none'}}
             >Password is required</FormHelperText>
+            <FormHelperText
+                className={classes.textHelper}
+                style={{display: this.state.errorvalidpassword ? 'block': 'none'}}
+            >Password is already exist</FormHelperText>
             </Grid>
             <Grid container direction="row" justify="center"  alignItems="center"  >
             <Button variant="contained" fullWidth className={classes.btnSubmit}
