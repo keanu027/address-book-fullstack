@@ -16,6 +16,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Dialog from '@material-ui/core/Dialog';
 import { makeStyles } from '@material-ui/core/styles';
 import DailogForm from './add'
+import TableForm from './table'
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -56,6 +58,7 @@ const useStyles = makeStyles(theme => ({
   function handleLogout() {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    localStorage.removeItem('usernameId');
     props.history.push('/api/login')
   }
 
@@ -92,7 +95,9 @@ const useStyles = makeStyles(theme => ({
       <Dialog open={openDialog} onClose={handleClose}  aria-labelledby="form-dialog-title">
         <DailogForm close={setOpenDialog}/>
       </Dialog>
+      
     </div>
+    <TableForm />
     <div>
         <Popper open={open} anchorEl={anchorRef.current} keepMounted transition disablePortal>
           {({ TransitionProps, placement }) => (
@@ -104,7 +109,7 @@ const useStyles = makeStyles(theme => ({
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList>
                     <MenuItem onClick={handleAddForm}>Add Address Book</MenuItem>
-                    <MenuItem onClick={handleClose}>List of Address Book</MenuItem>
+                    <MenuItem onClick={handleClose}>Your Profile</MenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
@@ -112,6 +117,7 @@ const useStyles = makeStyles(theme => ({
           )}
         </Popper>
       </div>
+    
   </React.Fragment>
   );
 }

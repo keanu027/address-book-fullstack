@@ -4,6 +4,7 @@ const massive = require('massive');
 const path = require('path');
 const signup = require('../controllers/signup.js');
 const contacts = require('../controllers/addcontacts.js');
+const list = require('../controllers/list.js');
 const secret = require('../secret.js');
 const jwt = require('jsonwebtoken');
 const cors = require("cors");
@@ -28,8 +29,11 @@ massive({
   app.post('/api/registration',signup.create)
   app.post('/api/login',signup.login)
 
-  app.post('/',contacts.create)
   app.post('/home',contacts.create)
+
+  app.get('/create/:userId',list.data)
+
+  app.delete('/delete/:userId',list.del)
 
 
   app.get('/api/protected/data',function(req, res){

@@ -36,6 +36,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function FormDialog(props) {
   const classes = useStyles();
+  const [userId, setUserId] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const [fname, setFname] = React.useState('');
   const [lname, setLname] = React.useState('');
@@ -60,6 +61,12 @@ export default function FormDialog(props) {
   const [errorhome_phone, setErrorHomePhone] = React.useState(false);
   const [errormobile_phone, setErrorMobilePhone] = React.useState(false);
   const [errorwork_phone, setErrorWorkPhone] = React.useState(false);
+
+  useEffect(()=>{
+    if(localStorage.getItem('usernameId')){
+      setUserId(localStorage.getItem('usernameId'))
+    }
+  })
 
   function handleClose() {
     props.close(false);
@@ -91,7 +98,7 @@ export default function FormDialog(props) {
 
    } else {
           axios.post('http://localhost:3001/home',{
-            fname,lname,email,postal_code,city,
+            userId,fname,lname,email,postal_code,city,
             province,country, home_phone, mobile_phone, work_phone
           }).then(res =>{
             console.log(res)

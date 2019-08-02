@@ -6,15 +6,16 @@ exports.up = (pgm) => {
           type: 'serial',
           primaryKey: true,
         },
+        userId:{
+          type: 'integer',
+          notNull: true,
+        },
         fname: {
           type: 'text',
           notNull: true,
         },
         lname: {
           type: 'text',
-        },
-        contacts: {
-          type: 'integer',
         },
         email: {
           type: 'text',
@@ -31,6 +32,15 @@ exports.up = (pgm) => {
         country: {
           type: 'text',
         },
+        home_phone: {
+            type: 'text',
+          },
+          mobile_phone: {
+            type: 'text',
+          },
+          work_phone: {
+            type: 'text',
+          },
       });
 };
 

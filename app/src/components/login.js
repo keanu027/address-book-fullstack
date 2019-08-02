@@ -163,6 +163,7 @@ class Login extends React.Component {
           } else {
             localStorage.setItem('token',res.data.token)
             localStorage.setItem('username',res.data.username)
+            localStorage.setItem('usernameId',res.data.id)
             //console.log(res.data.username)
             this.props.history.push('/home')
 
