@@ -32,6 +32,9 @@ massive({
   app.post('/home',contacts.create)
 
   app.get('/create/:userId',list.data)
+  app.get('/getlist/:userId',list.getlist)
+  app.get('/data/:id',list.persondata)
+  app.patch('/update/:id',list.update_persondata)
 
   app.delete('/delete/:userId',list.del)
 

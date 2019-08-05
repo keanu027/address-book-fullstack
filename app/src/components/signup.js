@@ -35,14 +35,14 @@ const styles={
     },
     btnSubmit:{        
       textTransform: 'capitalize',
-      backgroundColor: '#54D134',
+      backgroundColor: '#4CAF50',//#54D134
       fontWeight: 'bold',
       color: 'white',
       fontSize: '18px',
       marginTop: '3%',
       marginBottom: '3%',
       '&:hover': {
-          backgroundColor: '#3DA822',
+          backgroundColor: '#3e8e41',//#3DA822
           color: 'white',
       },
     },
@@ -284,18 +284,12 @@ class Signup extends React.Component {
                   required
                   fullWidth
                   id="fname"
-                  label="First Name"
+                  label={this.state.errorfname? 'Enter First Name': 'First Name'}
                   
                   error={this.state.errorfname}
                   onChange={this.handleFname('fname')}
                   onBlur={this.handleFname('fname')}
                 />
-                  <Grid item xs={12} sm={9}>
-                  <FormHelperText
-                  className={classes.textHelperName}
-                  style={{display: this.state.errorfname ? 'block': 'none'}}
-                  >First Name is required</FormHelperText>
-                  </Grid>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -304,25 +298,19 @@ class Signup extends React.Component {
                   required
                   fullWidth
                   id="lname"
-                  label="Last Name"
+                  label={this.state.errorlname? 'Enter Last Name':'Last Name'}
                   name="lname"
                   autoComplete="lname"
                   error={this.state.errorlname}
                   onChange={this.handleLname('lname')}
                   onBlur={this.handleLname('lname')}
                 />
-                  <Grid item xs={12} sm={9}>
-                  <FormHelperText
-                  className={classes.textHelperName}
-                  style={{display: this.state.errorlname ? 'block': 'none'}}
-                  >Last Name is required</FormHelperText>
-                  </Grid>
               </Grid>
             </Grid>
             <Grid container direction="row" justify="center"  alignItems="center"  >
             <TextField
                 id="standard-name"
-                label="Username"
+                label={this.state.errorusername? 'Enter Username':'Username'}
                 margin="normal"
                 variant="outlined"
                 fullWidth 
@@ -334,10 +322,6 @@ class Signup extends React.Component {
             />
             <FormHelperText
                 className={classes.textHelper}
-                style={{display: this.state.errorusername ? 'block': 'none'}}
-            >Username is required</FormHelperText>
-            <FormHelperText
-                className={classes.textHelper}
                 style={{display: this.state.errorvalidusername ? 'block': 'none'}}
             >Username is already exist</FormHelperText>
             </Grid>
@@ -345,7 +329,7 @@ class Signup extends React.Component {
             <Grid container direction="row" justify="center"  alignItems="center"  >
             <TextField
                 id="standard-password-input"
-                label="Password"
+                label={this.state.errorpassword? 'Enter Password':'Password'}
                 type="password"
                 margin="normal"
                 variant="outlined"
@@ -356,10 +340,6 @@ class Signup extends React.Component {
                 onChange={this.handlePassword('password')}
                 onBlur={this.handlePassword('password')}
             />
-            <FormHelperText
-                className={classes.textHelper}
-                style={{display: this.state.errorpassword ? 'block': 'none'}}
-            >Password is required</FormHelperText>
             <FormHelperText
                 className={classes.textHelper}
                 style={{display: this.state.errorvalidpassword ? 'block': 'none'}}

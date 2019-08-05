@@ -1,4 +1,4 @@
-import React,{useState,useEffect } from 'react';
+import React,{useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
@@ -39,6 +39,8 @@ const useStyles = makeStyles(theme => ({
   function Home(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [contactlist, setContactList] = React.useState([]);
+  const [addressbook, setAddressBook] = React.useState([]);
   const [username, setUsername]= React.useState('');
   const [openDialog, setOpenDialog] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -50,6 +52,17 @@ const useStyles = makeStyles(theme => ({
     }
     setUsername(localStorage.getItem('username'))
   });
+
+  useEffect(()=>{
+    axios.get(`http://localhost:3001/create/${localStorage.getItem('usernameId')}`)
+    .then(res=> {      
+      //console.log(res.data)
+      //console.log(res.data.data)
+      setContactList(res.data); 
+     // setAddressBook(res.data.data);
+    });
+  },[setContactList],[setAddressBook]);
+  
   function handleAddForm(){
     setOpenDialog(true);
     setOpen(false);
@@ -70,7 +83,6 @@ const useStyles = makeStyles(theme => ({
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
-
     //setOpenDialog(false);
     setOpen(false);
   }
@@ -97,7 +109,7 @@ const useStyles = makeStyles(theme => ({
       </Dialog>
       
     </div>
-    <TableForm />
+    <TableForm datalist={contactlist}/>
     <div>
         <Popper open={open} anchorEl={anchorRef.current} keepMounted transition disablePortal>
           {({ TransitionProps, placement }) => (

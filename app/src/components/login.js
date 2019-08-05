@@ -35,14 +35,14 @@ const styles={
     },
     btnSubmit:{        
       textTransform: 'capitalize',
-      backgroundColor: '#094EB5',
+      backgroundColor: '#4C69BA',//#094EB5
       fontWeight: 'bold',
       color: 'white',
       fontSize: '18px',
       marginTop: '3%',
       marginBottom: '3%',
       '&:hover': {
-          backgroundColor: 'darkblue',
+          backgroundColor: '#5B7BD5',//#5B7BD5
           color: 'white',
       },
     },
@@ -239,7 +239,7 @@ class Login extends React.Component {
             <Grid container direction="row" justify="center"  alignItems="center"  >
             <TextField
                 id="standard-name"
-                label="Username"
+                label={this.state.errorusername? 'Enter Username': 'Username'}
                 margin="normal"
                 fullWidth required
                 error={this.state.errorusername||this.state.errorvalidusername}
@@ -249,10 +249,6 @@ class Login extends React.Component {
             />
             <FormHelperText
                 className={classes.textHelper}
-                style={{display: this.state.errorusername ? 'block': 'none'}}
-            >Username is required</FormHelperText>
-            <FormHelperText
-                className={classes.textHelper}
                 style={{display: this.state.errorvalidusername ? 'block': 'none'}}
             >Incorrect Username</FormHelperText>
             </Grid>
@@ -260,7 +256,7 @@ class Login extends React.Component {
             <Grid container direction="row" justify="center"  alignItems="center"  >
             <TextField
                 id="standard-password-input"
-                label="Password"
+                label={this.state.errorpassword? 'Enter Password': 'Password'}
                 type="password"
                 margin="normal"
                 fullWidth required
@@ -269,10 +265,6 @@ class Login extends React.Component {
                 onChange={this.handlePassword('password')}
                 onBlur={this.handlePassword('password')}
             />
-            <FormHelperText
-                className={classes.textHelper}
-                style={{display: this.state.errorpassword ? 'block': 'none'}}
-            >Password is required</FormHelperText>
             <FormHelperText
                 className={classes.textHelper}
                 style={{display: this.state.errorvalidpassword ? 'block': 'none'}}

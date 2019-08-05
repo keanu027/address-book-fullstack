@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 export default function FormDialog(props) {
   const classes = useStyles();
   const [userId, setUserId] = React.useState('');
-  const [open, setOpen] = React.useState(false);
+  const [id, setId] = React.useState('');
   const [fname, setFname] = React.useState('');
   const [lname, setLname] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -62,11 +62,40 @@ export default function FormDialog(props) {
   const [errormobile_phone, setErrorMobilePhone] = React.useState(false);
   const [errorwork_phone, setErrorWorkPhone] = React.useState(false);
 
+  const [btnupdate, setBtnUpdate] = React.useState(false);
+  const [btnedit, setBtnEdit] = React.useState(true);
+  const [inptfname, setInptFname] = React.useState(true);
+  const [inptlname, setInptLname] = React.useState(true);
+  const [inptemail, setInptEmail] = React.useState(true);
+  const [inptpostal, setInptPostal] = React.useState(true);
+  const [inptcity, setInptCity] = React.useState(true);
+  const [inptprovince, setInptProvince] = React.useState(true);
+  const [inptcountry, setInptCountry] = React.useState(true);
+  const [inpthomephone, setInptHomePhone] = React.useState(true);
+  const [inptmobilephone, setInptMobilePhone] = React.useState(true);
+  const [inptworkphone, setInptWorkPhone] = React.useState(true);
+
   useEffect(()=>{
     if(localStorage.getItem('usernameId')){
       setUserId(localStorage.getItem('usernameId'))
     }
-  })
+  });
+
+  useEffect(()=>{
+    props.personinfo.map(data=>{
+      setId(data.id)
+      setFname(data.fname);
+      setLname(data.lname);
+      setEmail(data.email);
+      setCity(data.city);
+      setProvince(data.province);
+      setPostal(data.postal_code);
+      setCountry(data.country);
+      setHomePhone(data.home_phone);
+      setMobilePhone(data.mobile_phone);
+      setWorkPhone(data.work_phone);
+    });
+  },[props.personinfo])
 
   function handleClose() {
     props.close(false);
@@ -97,17 +126,42 @@ export default function FormDialog(props) {
       }
 
    } else {
-          axios.post('http://localhost:3001/home',{
-            userId,fname,lname,email,postal_code,city,
+          axios.patch(`http://localhost:3001/update/${id}`,{
+            fname,lname,email,postal_code,city,
             province,country, home_phone, mobile_phone, work_phone
           }).then(res =>{
-            window.location.reload();
-            //console.log(res)
-            props.close(false); 
+            //window.location.reload();
+            console.log(res)
+            setBtnUpdate(false);
+            setBtnEdit(true);
+            setInptFname(true);
+            setInptLname(true);
+            setInptEmail(true);
+            setInptPostal(true);
+            setInptCity(true);
+            setInptProvince(true);
+            setInptCountry(true);
+            setInptHomePhone(true);
+            setInptMobilePhone(true);
+            setInptWorkPhone(true);
+            //props.close(false); 
           })
    }
   }
-  
+  function handleEdit(){
+    setBtnUpdate(true);
+    setBtnEdit(false);
+    setInptFname(false);
+    setInptLname(false);
+    setInptEmail(false);
+    setInptPostal(false);
+    setInptCity(false);
+    setInptProvince(false);
+    setInptCountry(false);
+    setInptHomePhone(false);
+    setInptMobilePhone(false);
+    setInptWorkPhone(false);
+  }
   function handleLname(data){
     if(data.length === 0){
       setErrorLname(true)
@@ -230,6 +284,9 @@ export default function FormDialog(props) {
                 error={errorfname}
                 onChange={e =>handleFname(e.target.value)}
                 onBlur={e =>handleFname(e.target.value) }
+                inputProps={{
+                    readOnly:inptfname
+                }}
               />
 
               <TextField
@@ -247,6 +304,9 @@ export default function FormDialog(props) {
                 error={errorlname}
                 onChange={e => handleLname(e.target.value)}
                 onBlur={e => handleLname(e.target.value)}
+                inputProps={{
+                    readOnly:inptlname
+                }}
               />
 
               <TextField
@@ -264,6 +324,9 @@ export default function FormDialog(props) {
                 error={erroremail}
                 onChange={e =>handleEmail(e.target.value)}
                 onBlur={e =>handleEmail(e.target.value) }
+                inputProps={{
+                    readOnly:inptemail
+                }}
               />
 
               <TextField
@@ -280,6 +343,9 @@ export default function FormDialog(props) {
                 error={errorpostal}
                 onChange={e =>handlePostalCode(e.target.value)}
                 onBlur={e =>handlePostalCode(e.target.value) }
+                inputProps={{
+                    readOnly:inptpostal
+                }}
               />
               
               <TextField
@@ -296,6 +362,9 @@ export default function FormDialog(props) {
                 error={errorcity}
                 onChange={e =>handleCity(e.target.value)}
                 onBlur={e =>handleCity(e.target.value) }
+                inputProps={{
+                    readOnly:inptcity
+                }}
               />
               <TextField
                 className={classes.textField}
@@ -311,6 +380,9 @@ export default function FormDialog(props) {
                 error={errorprovince}
                 onChange={e =>handleProvince(e.target.value)}
                 onBlur={e =>handleProvince(e.target.value) }
+                inputProps={{
+                    readOnly:inptprovince
+                }}
               />
               <TextField
                 className={classes.textField}
@@ -326,6 +398,9 @@ export default function FormDialog(props) {
                 error={errorcountry}
                 onChange={e =>handleCountry(e.target.value)}
                 onBlur={e =>handleCountry(e.target.value) }
+                inputProps={{
+                    readOnly:inptcountry
+                }}
               />
 
 
@@ -344,6 +419,9 @@ export default function FormDialog(props) {
                 error={errorhome_phone}
                 onChange={e =>handleHome(e.target.value)}
                 onBlur={e =>handleHome(e.target.value) }
+                inputProps={{
+                    readOnly:inpthomephone
+                }}
               />
 
               <TextField
@@ -361,6 +439,9 @@ export default function FormDialog(props) {
                 error={errormobile_phone}
                 onChange={e =>handleMobile(e.target.value)}
                 onBlur={e =>handleMobile(e.target.value) }
+                inputProps={{
+                    readOnly:inptmobilephone
+                }}
               />
               <TextField
                 className={classes.textField}
@@ -377,6 +458,9 @@ export default function FormDialog(props) {
                 error={errorwork_phone}
                 onChange={e =>handleWork(e.target.value)}
                 onBlur={e =>handleWork(e.target.value) }
+                inputProps={{
+                    readOnly:inptworkphone
+                }}
               />
         </Grid>
         </DialogContent>
@@ -384,8 +468,11 @@ export default function FormDialog(props) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleCreate} color="primary">
-            Submit
+          <Button onClick={handleEdit} color="primary"  style={{display: btnedit? 'block':'none'}}>
+            Edit
+          </Button>
+          <Button onClick={handleCreate} color="primary" style={{display: btnupdate? 'block':'none'}}>
+            Update
           </Button>
         </DialogActions>
       </React.Fragment>
