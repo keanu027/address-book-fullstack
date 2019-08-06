@@ -25,7 +25,7 @@ function data(req, res) {
           console.error(err);
           res.status(500).end();
       }); */
-    db.address_book.find({userId: userId})
+    db.address_book.find({user_id: userId})
     .then(book => res.status(201).json(book)
     )
 
@@ -106,7 +106,7 @@ function del(req, res) {
     const {userId}=req.params;
     
     if(userId){
-    db.address_book.destroy({contactId: userId})
+    db.address_book.destroy({contact_id: userId})
     .then(book =>{
         db.contacts.destroy({id: userId}).then(data =>{
             res.status(201).json({book,data})

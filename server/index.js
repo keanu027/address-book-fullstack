@@ -5,6 +5,7 @@ const path = require('path');
 const signup = require('../controllers/signup.js');
 const contacts = require('../controllers/addcontacts.js');
 const list = require('../controllers/list.js');
+const sort = require('../controllers/sort.js');
 const secret = require('../secret.js');
 const jwt = require('jsonwebtoken');
 const cors = require("cors");
@@ -35,8 +36,10 @@ massive({
   app.get('/getlist/:userId',list.getlist)
   app.get('/data/:id',list.persondata)
   app.patch('/update/:id',list.update_persondata)
-
   app.delete('/delete/:userId',list.del)
+
+  app.get('/sortasc/:userId',sort.asc)
+  app.get('/sortdesc/:userId',sort.desc)
 
 
   app.get('/api/protected/data',function(req, res){

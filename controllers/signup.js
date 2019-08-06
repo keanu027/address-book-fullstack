@@ -21,7 +21,7 @@
                     username,password: hash,
                     user_profiles: [
                         {
-                        userId: undefined, fname: fname, lname: lname,
+                        user_id: undefined, fname: fname, lname: lname,
                         },
                     ],
                 },

@@ -145,6 +145,7 @@ export default function FormDialog(props) {
             setInptMobilePhone(true);
             setInptWorkPhone(true);
             //props.close(false); 
+            props.reload(); 
           })
    }
   }

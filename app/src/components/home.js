@@ -53,6 +53,7 @@ const useStyles = makeStyles(theme => ({
     setUsername(localStorage.getItem('username'))
   });
 
+/* */
   useEffect(()=>{
     axios.get(`http://localhost:3001/create/${localStorage.getItem('usernameId')}`)
     .then(res=> {      
@@ -62,7 +63,7 @@ const useStyles = makeStyles(theme => ({
      // setAddressBook(res.data.data);
     });
   },[setContactList],[setAddressBook]);
-  
+
   function handleAddForm(){
     setOpenDialog(true);
     setOpen(false);
@@ -76,7 +77,7 @@ const useStyles = makeStyles(theme => ({
   }
 
   function handleToggle() {
-    setOpen(prevOpen => !prevOpen);
+   setOpen(prevOpen => !prevOpen);
   }
 
   function handleClose(event) {
@@ -94,7 +95,7 @@ const useStyles = makeStyles(theme => ({
           <Toolbar>
             <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu"
               ref={anchorRef}  aria-controls="menu-list-grow"  aria-haspopup="true"
-              onClick={handleToggle}
+              //onClick={handleToggle}
               >
               <MenuIcon />
             </IconButton>
@@ -109,7 +110,7 @@ const useStyles = makeStyles(theme => ({
       </Dialog>
       
     </div>
-    <TableForm datalist={contactlist}/>
+    <TableForm datalist={contactlist} />
     <div>
         <Popper open={open} anchorEl={anchorRef.current} keepMounted transition disablePortal>
           {({ TransitionProps, placement }) => (
