@@ -100,7 +100,7 @@ const useStyles = makeStyles(theme => ({
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" className={classes.title}>
-              Hello {username}
+              {username}
             </Typography>
             <Button color="inherit" onClick={handleLogout}>Logout</Button>
           </Toolbar>

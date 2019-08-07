@@ -3,33 +3,27 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import axios from 'axios';
 const useStyles = makeStyles(theme => ({
-  paper: {
-    marginRight: theme.spacing(2),
-  },
   title: {
     backgroundColor: '#55D134',
     color: 'white',
     flexGrow: 1,
+    '@media (max-width:320px)':{
+      textAlign:'center',
+      fontSize: '18px',
+    }
   },
   menuButton: {
     marginRight: theme.spacing(),
   },
-  textHelperName:{
-    color: 'red',
-    margin: '1%'
-  },
   textField:{
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-
   }
  
 }));
@@ -101,8 +95,9 @@ export default function FormDialog(props) {
             userId,fname,lname,email,postal_code,city,
             province,country, home_phone, mobile_phone, work_phone
           }).then(res =>{
-            window.location.reload();
+            //window.location.reload();
             //console.log(res)
+            props.update(res);
             props.close(false); 
           })
    }
@@ -204,7 +199,7 @@ export default function FormDialog(props) {
   return (
       <React.Fragment>
         <DialogTitle id="form-dialog-title"  className={classes.title} >
-        <Box fontWeight="fontWeightBold" >
+        <Box fontWeight="fontWeightBold" className={classes.title}>
             Add New Contacts
         </Box>
        </DialogTitle>
@@ -344,6 +339,7 @@ export default function FormDialog(props) {
                 error={errorhome_phone}
                 onChange={e =>handleHome(e.target.value)}
                 onBlur={e =>handleHome(e.target.value) }
+                inputProps={{ maxLength: 11 }}
               />
 
               <TextField
@@ -361,6 +357,7 @@ export default function FormDialog(props) {
                 error={errormobile_phone}
                 onChange={e =>handleMobile(e.target.value)}
                 onBlur={e =>handleMobile(e.target.value) }
+                inputProps={{ maxLength: 11 }}
               />
               <TextField
                 className={classes.textField}
@@ -377,6 +374,7 @@ export default function FormDialog(props) {
                 error={errorwork_phone}
                 onChange={e =>handleWork(e.target.value)}
                 onBlur={e =>handleWork(e.target.value) }
+                inputProps={{ maxLength: 11 }}
               />
         </Grid>
         </DialogContent>

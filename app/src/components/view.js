@@ -130,8 +130,8 @@ export default function FormDialog(props) {
             fname,lname,email,postal_code,city,
             province,country, home_phone, mobile_phone, work_phone
           }).then(res =>{
-            //window.location.reload();
-            console.log(res)
+            window.location.reload();
+            //console.log(res)
             setBtnUpdate(false);
             setBtnEdit(true);
             setInptFname(true);
@@ -145,7 +145,7 @@ export default function FormDialog(props) {
             setInptMobilePhone(true);
             setInptWorkPhone(true);
             //props.close(false); 
-            props.reload(); 
+            props.reload(res); 
           })
    }
   }
@@ -260,7 +260,7 @@ export default function FormDialog(props) {
       <React.Fragment>
         <DialogTitle id="form-dialog-title"  className={classes.title} >
         <Box fontWeight="fontWeightBold" >
-            Add New Contacts
+           Contact Info:
         </Box>
        </DialogTitle>
         <DialogContent dividers>

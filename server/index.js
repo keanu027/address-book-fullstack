@@ -38,8 +38,10 @@ massive({
   app.patch('/update/:id',list.update_persondata)
   app.delete('/delete/:userId',list.del)
 
-  app.get('/sortasc/:userId',sort.asc)
-  app.get('/sortdesc/:userId',sort.desc)
+  app.get('/sortascfname/:userId',sort.ascfname)
+  app.get('/sortdescfname/:userId',sort.descfname)
+  app.get('/sortasclname/:userId',sort.asclname)
+  app.get('/sortdesclname/:userId',sort.desclname)
 
 
   app.get('/api/protected/data',function(req, res){
