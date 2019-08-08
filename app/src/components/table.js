@@ -1,19 +1,22 @@
 import React from 'react';
+import axios from 'axios';
+import GroupForm from './group'
+import FormDialogView from './view'
+import DailogForm from './add'
+
 import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper';
-import axios from 'axios';
 import { IconButton } from '@material-ui/core';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Dialog from '@material-ui/core/Dialog';
-import FormDialogView from './view'
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
-import DailogForm from './add'
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -22,12 +25,26 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import Divider from '@material-ui/core/Divider';
+
 const styles={
   root: {
-    width: '95%',
     marginTop: '5%',
+    margin: '0 auto',
+    width: '95%',
+    backgroundColor: '#85C1CC',
+    '@media (max-width:320px)':{
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      justifyContent: 'space-between', 
+    }
+
+  },  
+  paper: {
+    width: '95%',
     overflowX: 'auto',
     margin: '0 auto',
+    backgroundColor: '#f4f4f4',//E8AD6D
 
   },
   header:{
@@ -43,40 +60,36 @@ const styles={
      }
   },
   headertitle:{
-    width: '30%',
     fontWeight: 'bold',
     marginTop: '1%',
-    textAlign:'center',
+    color: 'white',
     '@media (max-width:320px)':{
-      color: 'black',
+      color: 'white',
       fontSize: '25px',
       marginTop: '5%',
-      width: '100%',
-      textAlign:'center',
+      width: '70%',
+      textAlign: 'center',
+
      }
   },
   headersearch:{
   width: '30%',
   '@media (max-width:320px)':{
-    width: '100%',
+    width: '80%',
    },
   },
   headersort:{
   marginLeft: '3%', marginRight: '3%',
   width: '30%',
   '@media (max-width:320px)':{
-    width: '100%',
+    width: '80%',
    },
   },
   headeradd:{
-  width: '30%',
-  display: 'flex',
-  textAlign:'center',
-  justifyContent: 'center',
-  alignItems: 'flex-end',
   '@media (max-width:320px)':{
-    width: '100%',
-    textAlign:'center'
+    width: '30%',
+    fontSize: '10px',
+    textAlign:'center',
    },
   },
 }
@@ -95,7 +108,9 @@ class TableForm extends React.Component {
             filter: [],
             sortasc: [],
             addopen: false,
-            width: '',
+            groupopen: false,
+            data : 'Contact List',
+            loadingdata: true,
         }
         this.handleDestroy =this.handleDestroy.bind(this);
         this.handleView =this.handleView.bind(this);
@@ -105,29 +120,33 @@ class TableForm extends React.Component {
         this.handleUpdate =this.handleUpdate.bind(this);
         this.handleReload =this.handleReload.bind(this);
     }
-
     componentWillReceiveProps(props){
-        //console.log(props.datalist)
-        if(props.datalist.length !== 0){
-        props.datalist.map(data =>{
-          axios.get(`http://localhost:3001/getlist/${data.contact_id}`)
-          .then(res=>{
-            //console.log(res)
-            this.setState({
-              contactlist:this.state.contactlist.concat(res.data),
-              filter:this.state.contactlist.concat(res.data)
+      if(this.state.stopper){
+          if(props.datalist.length !== 0){
+          props.datalist.map(data =>{
+            axios.get(`http://localhost:3001/getlist/${data.contact_id}`)
+            .then(res=>{
+              //console.log(res)
+              this.setState({
+                stopper:false,
+                contactlist:this.state.contactlist.concat(res.data),
+                filter:this.state.contactlist.concat(res.data)
+              })
             })
           })
-        })
-        }
+          }
+      } 
+
 
     }
     handleReload(props){
-/*
+/* 
+    this.setState({ 
+      loadingdata:false
+    })
       axios.get(`http://localhost:3001/create/${localStorage.getItem('usernameId')}`)     
       .then(res =>{
         this.setState({ 
-          stopper:false,
           contactlist: ''
         })
           res.data.map(data =>{
@@ -141,8 +160,7 @@ class TableForm extends React.Component {
             })
           })
       })
-      console.log(this.state.contactlist.length)
- */
+*/
     }
     handleView(event){
       axios.get(`http://localhost:3001/data/${event}`)
@@ -168,6 +186,7 @@ class TableForm extends React.Component {
       this.setState({
         open: false,
         addopen:false,
+        groupopen:false,
       })
     }
     handleSearch(props){
@@ -265,58 +284,60 @@ class TableForm extends React.Component {
           label: 'Last Name Desc',
         }
       ];
-      if(list.length !== 0){
-        datalist =(
-          this.state.contactlist.map(data =>(
-        <List dense={true} key={data.id} component="nav" className={classes.list}>
-                    <ListItem button divider>
-                      <ListItemAvatar >
-                            <Avatar sizes="large">                    
-                              <AccountBoxIcon />
-                            </Avatar>
-                      </ListItemAvatar>
-                    <ListItemText
-                        style={{color: 'black'}}
-                        primary={data.fname+" "+data.lname}
-                        secondary={true ? data.mobile_phone : null}
-                    />
-                      <ListItemSecondaryAction>
-    
-                            <Tooltip title="View">
-                              <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}} onClick={()=> this.handleView(data.id)}>
-                                <VisibilityIcon color="primary" />
-                              </IconButton>
-                          </Tooltip>
-    
-                          <Tooltip title="Delete">
-                              <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}} onClick={()=> this.handleDestroy(data.id)}  >
-                                <DeleteIcon color="error" />
-                              </IconButton> 
-                          </Tooltip>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-          </List>  
-          ))
-          
+        if(list.length !== 0){
+          datalist =(
+            this.state.contactlist.map(data =>(
+          <List dense={true} key={data.id} component="nav" className={classes.list}>
+                      <ListItem button divider onClick={()=> this.handleView(data.id)}>
+                        <ListItemAvatar >
+                              <Avatar sizes="large" style={{backgroundColor: '#3F51B5'}} >                    
+                                <AccountBoxIcon />
+                              </Avatar>
+                        </ListItemAvatar>
+                      <ListItemText
+                          style={{color: 'black'}}
+                          primary={data.fname+" "+data.lname}
+                          secondary={true ? data.mobile_phone : null}
+                      />
+                        <ListItemSecondaryAction>
+
+                              <Tooltip title="View">
+                                <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}} onClick={()=> this.handleView(data.id)}>
+                                  <VisibilityIcon color="primary" />
+                                </IconButton>
+                            </Tooltip>
+      
+                            <Tooltip title="Delete">
+                                <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}} onClick={()=> this.handleDestroy(data.id)}  >
+                                  <DeleteIcon color="error" />
+                                </IconButton> 
+                            </Tooltip>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+            </List>  
+            ))
+            
+            )
+        } else {
+          datalist =(
+            <List dense={true}>
+            <ListItem button divider>
+              <ListItemAvatar >
+                    <Avatar sizes="large" style={{backgroundColor: '#3F51B5'}}>                    
+                      <AccountBoxIcon />
+                    </Avatar>
+              </ListItemAvatar>
+            <ListItemText
+                style={{color: 'black'}}
+                primary="No Data Found"
+                secondary={false ? '': null}
+            />
+            </ListItem>
+          </List>   
           )
-      } else {
-        datalist =(
-          <List dense={true}>
-          <ListItem button divider>
-            <ListItemAvatar >
-                  <Avatar sizes="large">                    
-                    <AccountBoxIcon />
-                  </Avatar>
-            </ListItemAvatar>
-          <ListItemText
-              style={{color: 'black'}}
-              primary="No Data Found"
-              secondary={false ? '': null}
-          />
-          </ListItem>
-        </List>   
-        )
-      }
+        }
+      
+
       /*
           <Grid
       container
@@ -329,38 +350,48 @@ class TableForm extends React.Component {
       */
     return (
   <React.Fragment>
-    <Paper className={classes.root}>
-    <Grid
+  
+  <Grid
       container
       direction="row"
-      justify="center"
-      alignItems="center"
-      className={classes.header}
-    >
-      <Grid
+      justify="space-between"
+      alignItems="flex-end"
+      
+  >
+  <Paper className={classes.root}>
+  <Grid
       container
       direction="row"
-      justify="center"
-      alignItems="center"
-      className={classes.header}
-    >
-        <Grid className={classes.headertitle}>
-            <Typography variant="h4"  >
-                      Contact List 
-            </Typography>
-        </Grid>
-    </Grid>
+      justify="space-between"
+      alignItems="flex-end"
+      style={{padding: '0 20px'}}
+  >
+      <Typography variant="h5"  className={classes.headertitle}  >
+           {this.state.data}
+      </Typography>
 
+        <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}}  className={classes.headeradd}  onClick={()=>{ this.setState({addopen:true})} }>
+                    <Tooltip title="Add Contact">
+                        <PersonAddIcon color="primary" fontSize="large" />
+                    </Tooltip>
+        </IconButton>
+
+
+  </Grid>
+  </Paper>
+  </Grid>
+
+    <Paper className={classes.paper}>
     <Grid
       container
       direction="row"
-      justify="space-around"
+      justify="center"
       alignItems="flex-end"
       className={classes.header}
-    >
-          
+    >   
           <Grid className={classes.headersearch}>
               <TextField
+                  variant="outlined"
                   id="standard-search"
                   label="Search"
                   type="search"
@@ -372,6 +403,7 @@ class TableForm extends React.Component {
           <Grid className={classes.headersort}>
               <TextField
                   id="standard-select"
+                  variant="outlined"
                   select
                   label="Sort By"
                   value={this.state.sortval}
@@ -391,31 +423,26 @@ class TableForm extends React.Component {
                   ))}
                 </TextField>
           </Grid>
-          <Grid  className={classes.headeradd}>
-              <Tooltip title="Add Contact">
-              <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}}  onClick={()=>{ this.setState({addopen:true})} }>
-                          <PersonAddIcon color="primary" fontSize="large" />
-              </IconButton>
-              </Tooltip>
-          </Grid>
-    </Grid>
-
     </Grid>
     <Divider />
     {
       datalist
     }
     </Paper>
-      
 
+    
     <Dialog open={this.state.addopen} onClose={this.handleClose}   aria-labelledby="form-dialog-title">
         <DailogForm close={this.handleClose} update={(props)=> this.handleUpdate(props.data)}/>
+    </Dialog>
+
+    <Dialog open={this.state.groupopen} onClose={this.handleClose}   aria-labelledby="form-dialog-title">
+        <GroupForm close={this.handleClose} list={this.state.contactlist}/>
     </Dialog>
     
   <Dialog open={this.state.open} onClose={this.handleClose}  aria-labelledby="form-dialog-title">
       <FormDialogView 
       personinfo={this.state.personaldata} 
-      reload={(props)=> this.handleReload(props.data)}
+      reload={(props)=> this.handleReload(props.data) }
       close={this.handleClose}/>
   </Dialog>
   </React.Fragment>

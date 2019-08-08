@@ -6,6 +6,7 @@ const signup = require('../controllers/signup.js');
 const contacts = require('../controllers/addcontacts.js');
 const list = require('../controllers/list.js');
 const sort = require('../controllers/sort.js');
+const group = require('../controllers/group.js');
 const secret = require('../secret.js');
 const jwt = require('jsonwebtoken');
 const cors = require("cors");
@@ -31,6 +32,8 @@ massive({
   app.post('/api/login',signup.login)
 
   app.post('/home',contacts.create)
+  app.post('/creategroupname',contacts.creategroupname)
+  app.post('/creategrouplist',contacts.creategrouplist)
 
   app.get('/create/:userId',list.data)
   app.get('/getlist/:userId',list.getlist)
@@ -43,6 +46,7 @@ massive({
   app.get('/sortasclname/:userId',sort.asclname)
   app.get('/sortdesclname/:userId',sort.desclname)
 
+  app.get('/getgroup/:userId',group.data)
 
   app.get('/api/protected/data',function(req, res){
     if (!req.headers.authorization) {
