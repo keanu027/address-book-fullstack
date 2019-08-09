@@ -50,7 +50,7 @@ massive({
   app.get('/sortascgroupdesc/:userId',sort.groupdesc)
 
   app.get('/getgroup',group.data)
-  app.delete('/deletegroupname/:userId',group.del)
+  app.get('/deletegroupname/:userId',group.del)
   app.delete('/deletegrouplist/:userId',group.dellist)
   app.post('/grouplist',group.grouplist)
 

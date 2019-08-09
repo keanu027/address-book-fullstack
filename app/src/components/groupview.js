@@ -17,6 +17,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import CommentIcon from '@material-ui/icons/Comment';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
+import GroupIcon from '@material-ui/icons/Group';
+import Tooltip from '@material-ui/core/Tooltip';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -48,14 +55,50 @@ export default function GroupForm(props) {
 
   const [errorgname, setErrorGname] = React.useState(false);
   
-  useEffect(()=>{
-       console.log( props.list)
-  })
 
   function handleClose() {
     props.close(false);
   } 
  
+  let datalist;
+  if(props.datalist.length !== 0){
+    datalist =(
+      props.datalist.map(data =>(
+    <List dense={true} key={data.id} component="nav" className={classes.list}>
+                <ListItem button divider >
+                  <ListItemAvatar >
+                        <Avatar sizes="large" style={{backgroundColor: '#3F51B5'}} >                    
+                          <GroupIcon />
+                        </Avatar>
+                  </ListItemAvatar>
+                <ListItemText
+                    style={{color: 'black'}}
+                    primary={data.fname+" "+data.lname}
+                />
+                 
+                </ListItem>
+      </List>  
+      ))
+      
+      )
+  } else {
+    datalist =(
+      <List dense={true}>
+      <ListItem button divider>
+        <ListItemAvatar >
+              <Avatar sizes="large" style={{backgroundColor: '#3F51B5'}}>                    
+                <AccountBoxIcon />
+              </Avatar>
+        </ListItemAvatar>
+      <ListItemText
+          style={{color: 'black'}}
+          primary="No Data Found"
+          secondary={false ? '': null}
+      />
+      </ListItem>
+    </List>   
+    )
+  }
 
   return (
       <React.Fragment>
@@ -63,6 +106,7 @@ export default function GroupForm(props) {
         <Box fontWeight="fontWeightBold" className={classes.title}>
             Group Info
         </Box>
+        
        </DialogTitle>
         <DialogContent dividers>
         <Grid
@@ -71,6 +115,9 @@ export default function GroupForm(props) {
           justify="space-around"
           alignItems="center"
         > 
+        {
+          datalist
+        }
         </Grid>
         </DialogContent>
         <DialogActions>

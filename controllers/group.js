@@ -26,7 +26,7 @@ function del(req, res) {
     const {userId}=req.params;
     
     if(userId){
-    db.query(`DELETE FROM groups WHERE name=${userId}`)
+    db.query(`DELETE FROM groups WHERE name='${userId}' `)
     .then(book =>{
             res.status(201).json(book)
     })

@@ -140,10 +140,9 @@ export default function TableGroupForm(props) {
   function handleDelete(props){
     //console.log(props)
     /* */
-    axios.delete(`http://localhost:3001/deletegroupname/${props}`)
+    axios.get(`http://localhost:3001/deletegroupname/${props}`)
     .then(res=> {
-      console.log(res)  
-      //window.location.reload()
+      window.location.reload()
   }) 
  }
  function handleUpdate(props){
@@ -180,11 +179,11 @@ function handleSort(props){
 }
 function handleView(props){
   setGroupListOpen(true)
-  setList(props)
   axios.post(`http://localhost:3001/grouplist/`,{
     props,userId
   })
   .then(res =>{
+    setList(res.data)
   })
 }
 
