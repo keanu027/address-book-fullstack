@@ -1,6 +1,7 @@
 import React,{ useState, useEffect } from 'react';
 import axios from 'axios';
 import GroupForm from './group'
+import GroupAddForm from './groupadd'
 import GroupViewForm from './groupview'
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -111,6 +112,7 @@ export default function TableGroupForm(props) {
   const [filter, setFilter] = React.useState([]);
   const [groupopen, setGroupOpen] = React.useState(false);
   const [grouplistopen, setGroupListOpen] = React.useState(false);
+  const [grouplistaddopen, setGroupListAddOpen] = React.useState(false);
  const [sortval, setSortval] = React.useState(null);
  const [templist, setTemplist] = React.useState([]);
  const [list, setList] = React.useState('');
@@ -136,6 +138,7 @@ export default function TableGroupForm(props) {
   function handleClose(){
     setGroupOpen(false)
     setGroupListOpen(false)
+    setGroupListAddOpen(false)
   }
   function handleDelete(props){
     //console.log(props)
@@ -206,7 +209,7 @@ function handleView(props){
                      <ListItemSecondaryAction>
 
                            <Tooltip title="Add">
-                             <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}} >
+                             <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}} onClick={()=> setGroupListAddOpen(true)} >
                                <GroupAddIcon color="primary" />
                              </IconButton>
                          </Tooltip>
@@ -326,6 +329,11 @@ function handleView(props){
 
   <Dialog open={groupopen} onClose={handleClose}   aria-labelledby="form-dialog-title">
         <GroupForm close={handleClose} list={templist}  update={(props)=> handleUpdate(props.data)} 
+        />
+    </Dialog>
+
+    <Dialog open={grouplistaddopen} onClose={handleClose}   aria-labelledby="form-dialog-title">
+        <GroupAddForm close={handleClose} list={templist}   
         />
     </Dialog>
 
