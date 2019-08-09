@@ -101,7 +101,7 @@ const useStyles = makeStyles(theme => ({
     </Grid>
 
     <Grid style={{display: listopen? 'none': 'block'}}>
-    <TableGroupForm />
+    <TableGroupForm  />
     </Grid>
 
   </React.Fragment>

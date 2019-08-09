@@ -1,6 +1,7 @@
 import React,{ useState, useEffect } from 'react';
 import axios from 'axios';
 import GroupForm from './group'
+import GroupViewForm from './groupview'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -91,61 +92,108 @@ const useStyles = makeStyles(theme => ({
   },
 
   }));
-
+  const sort = [
+    {
+      value: 'ascending',
+      label: 'A-Z',
+    },
+    {
+      value: 'descending',
+      label: 'Z-A',
+    },
+  ];
 
 export default function TableGroupForm(props) {
   const classes = useStyles();
-  const [userId, setUserId] = React.useState('');
+  const [userId, setUserId] = React.useState(localStorage.getItem('usernameId'));
   const [open, setOpen] = React.useState(false);
   const [grouplist, setGroupList] = React.useState([]);
+  const [filter, setFilter] = React.useState([]);
   const [groupopen, setGroupOpen] = React.useState(false);
+  const [grouplistopen, setGroupListOpen] = React.useState(false);
+ const [sortval, setSortval] = React.useState(null);
+ const [templist, setTemplist] = React.useState([]);
+ const [list, setList] = React.useState('');
 
 
   useEffect(()=>{
-    if(localStorage.getItem('usernameId')){
-      setUserId(localStorage.getItem('usernameId'))
-    }
-  });
-
-  useEffect(()=>{
-    axios.get(`http://localhost:3001/getgroup/${localStorage.getItem('usernameId')}`)
+    axios.get(`http://localhost:3001/getgroup`)
     .then(res=> {    
-      console.log(res.data)
-    setGroupList(res.data); 
+      setGroupList(res.data); 
+      setFilter(res.data); 
     });
   },[setGroupList]);
+  
+  useEffect(()=>{
+      axios.get(`http://localhost:3001/create/${localStorage.getItem('usernameId')}`)
+      .then(res=> {     
+        setTemplist(res.data)
+      });
+
+  },[setTemplist])
+
 
   function handleClose(){
     setGroupOpen(false)
+    setGroupListOpen(false)
   }
+  function handleDelete(props){
+    //console.log(props)
+    /* */
+    axios.delete(`http://localhost:3001/deletegroupname/${props}`)
+    .then(res=> {
+      console.log(res)  
+      //window.location.reload()
+  }) 
+ }
+ function handleUpdate(props){
+        console.log(props)
+        setGroupList(prevState => [...prevState, props]);
 
+ }
+function handleSearch(props){
+  if(props.length !== 0){
+    var filtered = filter.filter(data =>{
+       return data.name.toLowerCase().match(props.toLowerCase()) 
+     });
+     setGroupList( filtered )
+     
+   } else {
+    setGroupList( filter )
+   }
+}
+function handleSort(props){
+    setSortval(props)
+    if(props === 'ascending'){
+      axios.get(`http://localhost:3001/sortascgroupasc/${localStorage.getItem('usernameId')}`)
+      .then(res =>{
+        setGroupList(res.data)
+        setFilter(res.data)
+      })
+    } else {
+      axios.get(`http://localhost:3001/sortascgroupdesc/${localStorage.getItem('usernameId')}`)
+      .then(res =>{
+        setGroupList(res.data)
+        setFilter(res.data)
+      })
+    }
+}
+function handleView(props){
+  setGroupListOpen(true)
+  setList(props)
+  axios.post(`http://localhost:3001/grouplist/`,{
+    props,userId
+  })
+  .then(res =>{
+  })
+}
 
-
-  
   let datalist;
-   const sort = [
-     {
-       value: 'fnameAsc',
-       label: 'First Name Asc',
-     },
-     {
-       value: 'fnameDesc',
-       label: 'First Name Desc',
-     },
-     {
-       value: 'lnameAsc',
-       label: 'Last Name Asc',
-     },
-     {
-       value: 'lnameDesc',
-       label: 'Last Name Desc',
-     }
-   ];
      if(grouplist.length !== 0){
        datalist =(
         grouplist.map(data =>(
-       <List dense={true} key={data.contact_id} component="nav" className={classes.list}>
-                   <ListItem button divider >
+       <List dense={true} key={data.name} component="nav" className={classes.list}>
+                   <ListItem button divider onClick={()=> handleView(data.name)}>
                      <ListItemAvatar >
                            <Avatar sizes="large" style={{backgroundColor: '#3F51B5'}} >                    
                              <GroupIcon />
@@ -154,7 +202,7 @@ export default function TableGroupForm(props) {
                    <ListItemText
                        style={{color: 'black'}}
                        primary={data.name}
-                       secondary={true ? data.fname+" "+data.lname : null}
+                       //secondary={true ? data.fname+" "+data.lname : null}
                    />
                      <ListItemSecondaryAction>
 
@@ -165,7 +213,7 @@ export default function TableGroupForm(props) {
                          </Tooltip>
    
                          <Tooltip title="Delete">
-                             <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}} >
+                             <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}} onClick={()=> handleDelete(data.name)} >
                                <DeleteIcon color="error" />
                              </IconButton> 
                          </Tooltip>
@@ -217,7 +265,7 @@ export default function TableGroupForm(props) {
       </Typography>
 
         <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}} className={classes.headeradd}  onClick={()=> setGroupOpen(true)}>
-                    <Tooltip title="Add Contact">
+                    <Tooltip title="Add Group">
                         <GroupAddIcon color="primary" fontSize="large" />
                     </Tooltip>
         </IconButton>
@@ -243,7 +291,7 @@ export default function TableGroupForm(props) {
                   type="search"
                   margin="normal"
                   fullWidth
-                  //onChange={(e)=>this.handleSearch(e.target.value)}
+                  onChange={(e)=> handleSearch(e.target.value)}
               />
           </Grid>
           <Grid className={classes.headersort}>
@@ -252,8 +300,8 @@ export default function TableGroupForm(props) {
                   variant="outlined"
                   select
                   label="Sort By"
-                  //value={this.state.sortval}
-                  //onChange={(e)=> this.handleSort(e.target.value) }
+                  value={sortval}
+                  onChange={(e)=> handleSort(e.target.value) }
                   SelectProps={{
                     MenuProps: {
                       className: classes.menu,
@@ -278,7 +326,12 @@ export default function TableGroupForm(props) {
 
 
   <Dialog open={groupopen} onClose={handleClose}   aria-labelledby="form-dialog-title">
-        <GroupForm close={handleClose} list={grouplist}/>
+        <GroupForm close={handleClose} list={templist}  update={(props)=> handleUpdate(props.data)} 
+        />
+    </Dialog>
+
+    <Dialog open={grouplistopen} onClose={handleClose}   aria-labelledby="form-dialog-title">
+      <GroupViewForm close={handleClose} datalist={list}/>
     </Dialog>
 
   </React.Fragment>

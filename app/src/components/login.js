@@ -15,19 +15,52 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info'
 import WarningIcon from '@material-ui/icons/Warning';
-import { resolve } from 'path';
 
 const styles={
     title:{
       fontSize: '28px',
       fontWeight: '550',
-      margin: '0 auto'
+      margin: '0 auto',
+      color: 'white,',
+      '@media (max-width:425px)':{
+        color:'white',
+        fontSize: '23px',
+        fontWeight: '550',
+      },
+      '@media (min-width:425px ) and (max-width: 1024px)':{
+        color:'white',
+        fontSize: '25px',
+        fontWeight: '550',
+      }
     },
     containerTitle: {
       marginTop: '15%',
       width: '20%',  
       padding: '20px',
+      backgroundColor: '#AAD1E2',// 63A8C7
       boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .5)',
+      '@media (max-width:425px)':{
+        width: '100%',
+        margin: '0 auto',
+        height: '640px',
+        boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0)',
+      },
+      '@media (min-width:426px ) and (max-width: 1024px)':{
+        width: '100%',
+        margin: '0 auto',
+        height: '1366px',
+        boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0)',
+
+      }
+    },
+    container:{
+      '@media (max-width:425px)':{
+        margin: '25% auto',
+      },
+      '@media (min-width:426px ) and (max-width: 768px)':{
+        margin: '25% auto',
+
+      }
     },
     textHelper:{
       color: 'red',
@@ -53,7 +86,14 @@ const styles={
       textDecoration: 'none'
     },
     img:{
-      width: '25%', margin: '10px auto'
+      width: '25%', margin: '10px auto',
+      '@media (max-width:425px)':{
+        width: '30%'
+      },
+      '@media (min-width:426px ) and (max-width: 768px)':{
+        width: '30%'
+
+      }
     }
   }
 
@@ -228,7 +268,7 @@ class Login extends React.Component {
           message={this.state.errormessage}
         />
         </Snackbar>
-
+        <Grid className={classes.container}>
             <Grid container justify="center" alignItems="center"  >
                 <img alt="" className={classes.img} src="https://cdn3.iconfinder.com/data/icons/business-avatar-1/512/10_avatar-512.png"/>
             </Grid>
@@ -284,6 +324,7 @@ class Login extends React.Component {
             
             </Link>
             </Grid>
+          </Grid>
         </Paper>
         </Grid>
         </React.Fragment>

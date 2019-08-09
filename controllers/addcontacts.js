@@ -31,20 +31,19 @@ function create(req, res) {
 }
 function creategroupname(req, res) {
     const db = req.app.get('db');
-    const { gname } = req.body;
+    const { gname, data,userId } = req.body;
         
-    db.group_names.insert({
-        name: gname
+    db.groups.insert({
+        name: gname, user_id: userId, contact_id: data
     })
     .then(book =>{
           res.status(201).json(book)
-        
     })
     .catch(err => {
           res.status(200).json({ error: err.message });
           console.error(err);
           res.status(500).end();
-      });
+    });
 }
 
 function creategrouplist(req, res) {

@@ -32,7 +32,7 @@ massive({
   app.post('/api/login',signup.login)
 
   app.post('/home',contacts.create)
-  app.post('/creategroupname',contacts.creategroupname)
+  app.post('/creategroup',contacts.creategroupname)
   app.post('/creategrouplist',contacts.creategrouplist)
 
   app.get('/create/:userId',list.data)
@@ -46,7 +46,13 @@ massive({
   app.get('/sortasclname/:userId',sort.asclname)
   app.get('/sortdesclname/:userId',sort.desclname)
 
-  app.get('/getgroup/:userId',group.data)
+  app.get('/sortascgroupasc/:userId',sort.groupasc)
+  app.get('/sortascgroupdesc/:userId',sort.groupdesc)
+
+  app.get('/getgroup',group.data)
+  app.delete('/deletegroupname/:userId',group.del)
+  app.delete('/deletegrouplist/:userId',group.dellist)
+  app.post('/grouplist',group.grouplist)
 
   app.get('/api/protected/data',function(req, res){
     if (!req.headers.authorization) {

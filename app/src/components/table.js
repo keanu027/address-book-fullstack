@@ -300,13 +300,6 @@ class TableForm extends React.Component {
                           secondary={true ? data.mobile_phone : null}
                       />
                         <ListItemSecondaryAction>
-
-                              <Tooltip title="View">
-                                <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}} onClick={()=> this.handleView(data.id)}>
-                                  <VisibilityIcon color="primary" />
-                                </IconButton>
-                            </Tooltip>
-      
                             <Tooltip title="Delete">
                                 <IconButton size="small" edge="end" style={{backgroundColor:'transparent'}} onClick={()=> this.handleDestroy(data.id)}  >
                                   <DeleteIcon color="error" />
@@ -434,10 +427,6 @@ class TableForm extends React.Component {
     <Dialog open={this.state.addopen} onClose={this.handleClose}   aria-labelledby="form-dialog-title">
         <DailogForm close={this.handleClose} update={(props)=> this.handleUpdate(props.data)}/>
     </Dialog>
-
-    <Dialog open={this.state.groupopen} onClose={this.handleClose}   aria-labelledby="form-dialog-title">
-        <GroupForm close={this.handleClose} list={this.state.contactlist}/>
-    </Dialog>
     
   <Dialog open={this.state.open} onClose={this.handleClose}  aria-labelledby="form-dialog-title">
       <FormDialogView 
@@ -445,6 +434,7 @@ class TableForm extends React.Component {
       reload={(props)=> this.handleReload(props.data) }
       close={this.handleClose}/>
   </Dialog>
+  
   </React.Fragment>
   );
     }

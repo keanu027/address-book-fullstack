@@ -54,8 +54,30 @@ function desclname(req, res) {
 
 }
 
+function groupasc(req, res) {
+    const db = req.app.get('db');
+    const {userId}=req.params;
+    
+    if(userId){
+     db.query(`select name from groups where groups.user_id = ${userId}  group by name order by groups.name asc`)
+     .then(list => res.status(201).json(list) )
+    } else {
+        res.status(201).json('error ung params') 
+    }
+}
 
+function groupdesc(req, res) {
+    const db = req.app.get('db');
+    const {userId}=req.params;
+    
+    if(userId){
+     db.query(`select name from groups where groups.user_id = ${userId}  group by name order by groups.name desc`)
+     .then(list => res.status(201).json(list) )
+    } else {
+        res.status(201).json('error ung params') 
+    }
+}
 
 module.exports ={
-    ascfname,descfname,asclname,desclname
+    ascfname,descfname,asclname,desclname,groupasc,groupdesc
 }

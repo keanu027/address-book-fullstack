@@ -38,21 +38,26 @@ const useStyles = makeStyles(theme => ({
  
 }));
 
-export default function GroupForm(props) {
+export default function GroupViewForm(props) {
   const classes = useStyles();
-  const [userId, setUserId] = React.useState('');
+  const [userId, setUserId] = React.useState(localStorage.getItem('usernameId'));
   const [open, setOpen] = React.useState(false);
   const [gname, setGname] = React.useState('');
   const [checked, setChecked] = React.useState([]);
   const [templist, setTemplist] = React.useState([]);
 
   const [errorgname, setErrorGname] = React.useState(false);
-
+  
   useEffect(()=>{
-    if(localStorage.getItem('usernameId')){
-      setUserId(localStorage.getItem('usernameId'))
-    }
-  })
+        props.list.map (data =>{
+          axios.get(`http://localhost:3001/getlist/${data.contact_id}`)
+          .then(res =>{ 
+            //console.log(res.data)
+            setTemplist(prevState => [...prevState, res.data[0]])
+          })
+        })
+  },[setTemplist])
+
   function handleClose() {
     props.close(false);
   } 
@@ -60,23 +65,18 @@ export default function GroupForm(props) {
    if(gname.length === 0){
     setErrorGname(true)
    } else {
-         //console.log(gname);
-         /**/
-          axios.post('http://localhost:3001/creategroupname',{
-            gname
-          }).then(res =>{
-            //window.location.reload();
-            //console.log(res.data.id)
-            console.log(res.data.id)
-            const groupId=res.data.id;
-            checked.map(contactId =>{
-                axios.post('http://localhost:3001/creategrouplist',{
-                    userId,contactId,groupId
-                }).then(res => console.log(res))
-            })
-            //props.update(res);
-            //props.close(false); 
-          }) 
+         checked.map( data =>{
+          // console.log(data)
+          axios.post('http://localhost:3001/creategroup',{
+            gname,data,userId
+          })
+          .then(res =>{
+            window.location.reload()
+            //console.log(res)
+            props.update(res);
+            props.close(false);
+          })
+         })
    }
   }
 
@@ -90,6 +90,7 @@ export default function GroupForm(props) {
     }
   }
   function handleCheck(props){
+
       const currentId = checked.indexOf(props);
       const newChecked = [...checked];
       if (currentId === -1) {
@@ -100,6 +101,42 @@ export default function GroupForm(props) {
   
       setChecked(newChecked);
   }
+
+    let DataList;
+
+    if(templist.length !== 0){
+      DataList=(
+       
+        templist.map(data => {
+          const labelId = `${data.fname+" "+data.lname}`;
+
+          return (
+          <ListItem key={data.id} role={undefined} dense button onChange={()=>handleCheck(data.id)}>
+              <ListItemIcon>
+              <Checkbox
+                  edge="start"
+                  checked={checked.indexOf(data.id) !== -1}
+                  tabIndex={-1}
+                  disableRipple
+                  inputProps={{ 'aria-labelledby': labelId }}
+              />
+              </ListItemIcon>
+              <ListItemText id={labelId} primary={labelId} />
+          </ListItem>
+          );
+      })  
+      )
+    } else{
+      
+      DataList=(
+
+        <ListItem role={undefined} dense button >
+        <ListItemIcon>
+        </ListItemIcon>
+        <ListItemText  primary='No Data Found' />
+       </ListItem>   
+      ) 
+    } 
 
   return (
       <React.Fragment>
@@ -132,24 +169,8 @@ export default function GroupForm(props) {
                 onBlur={e =>handleGname(e.target.value) }
               />
             <List >
-            {props.list.map(data => {
-                const labelId = `${data.fname+" "+data.lname}`;
-
-                return (
-                <ListItem key={data.contact_id} role={undefined} dense button onChange={()=>handleCheck(data.contact_id)}>
-                    <ListItemIcon>
-                    <Checkbox
-                        edge="start"
-                        checked={checked.indexOf(data.contact_id) !== -1}
-                        tabIndex={-1}
-                        disableRipple
-                        inputProps={{ 'aria-labelledby': labelId }}
-                    />
-                    </ListItemIcon>
-                    <ListItemText id={labelId} primary={labelId} />
-                </ListItem>
-                );
-            })
+            {
+              DataList
             }
             </List>
         </Grid>
